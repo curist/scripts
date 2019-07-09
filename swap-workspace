@@ -1,0 +1,43 @@
+#!/usr/local/Gambit/bin/gsi
+;; vi: ft=scheme
+
+;; ws number should in range of 1 ~ 8
+(define min-ws 1)
+(define max-ws 8)
+
+(define (mv-ws-cmd ws1s ws2s)
+  (let ((ws1 (number->string ws1s))
+        (ws2 (number->string ws2s)))
+    (string-append
+      "i3-msg '"
+      "rename workspace " ws1 " to temporary; "
+      "rename workspace " ws2 " to " ws1 "; "
+      "rename workspace temporary to " ws2 "'")))
+
+(define (swap-workspace ws1 ws2)
+  (if (or (= ws1 ws2)
+          (> ws1 max-ws) (> ws2 max-ws)
+          (< ws1 min-ws) (< ws2 min-ws))
+      'nop
+      (let [(cmd (mv-ws-cmd ws1 ws2))]
+        (shell-command cmd))))
+
+(define current-workspace
+  (let* [(cmd (string-append
+                "i3-msg -t get_workspaces | "
+                "jq -r '.[] | "
+                "select(.focused==true).name'"))
+         (res (shell-command cmd #t))
+         (code (car res))
+         (ws (if (= code 0) (cdr res) -1))]
+    (string->number (substring ws 0 1))))
+
+(define (main . arg)
+  (let* [(dir (if (pair? arg)
+                  (car arg)
+                  "left"))
+         (ws1 current-workspace)
+         (ws2 ((if (equal? "left" dir) - +) ws1 1))]
+    (swap-workspace ws1 ws2)))
+
+
