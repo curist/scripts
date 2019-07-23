@@ -1,0 +1,11 @@
+#!/bin/bash
+
+PROPS=$`xprop -id $(xdotool getwindowfocus)`
+WM_CLASS=`printf '%s' "$PROPS" | grep '^WM_CLASS' | awk '{print $NF}'`
+WD=`printf '%s' "$PROPS" | grep '^WM_NAME' | tr -d '"' | sed 's/.*= //'`
+
+if [[ $WM_CLASS =~ 'Sakura' ]]; then
+    sakura -d "$WD"
+else
+    sakura
+fi
