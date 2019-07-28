@@ -6,7 +6,10 @@
 (def max-ws 9)
 
 (defn exec [cmd]
-  (file/read (file/popen cmd) :all))
+  (let [f (file/popen cmd)
+        result (file/read f :all)]
+    (file/close f)
+    result))
 
 (defn mv-ws-cmd [ws1 ws2]
   (let [ws1s (string ws1)
