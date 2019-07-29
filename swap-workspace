@@ -1,9 +1,9 @@
 #!/usr/bin/env janet
 
-(def args (tuple/slice process/args 2))
+(def args (array/slice (dyn :args) 1))
 
-(def min-ws 1)
-(def max-ws 9)
+(def MIN-WS 1)
+(def MAX-WS 9)
 
 (defn exec [cmd]
   (let [f (file/popen cmd)
@@ -21,10 +21,9 @@
        "rename workspace temporary to " ws2s "'"])))
 
 (defn swap-workspace [ws1 ws2]
-  (if (or (= ws1 ws2)
-          (> ws1 max-ws) (> ws2 max-ws)
-          (< ws1 min-ws) (< ws2 min-ws))
-    'nop
+  (when (not (or (= ws1 ws2)
+                 (> ws1 MAX-WS) (> ws2 MAX-WS)
+                 (< ws1 MIN-WS) (< ws2 MIN-WS)))
     (let [cmd (mv-ws-cmd ws1 ws2)]
       (exec cmd))))
 
