@@ -1,24 +1,20 @@
 #!/usr/bin/env janet
 
+(import ./misc/misc :prefix "")
+
 (def args (array/slice (dyn :args) 1))
 
 (def MIN-WS 1)
 (def MAX-WS 9)
 
-(defn exec [cmd]
-  (let [f (file/popen cmd)
-        result (file/read f :all)]
-    (file/close f)
-    result))
-
 (defn mv-ws-cmd [ws1 ws2]
   (let [ws1s (string ws1)
         ws2s (string ws2)]
-    (string/join
-      ["i3-msg '"
-       "rename workspace " ws1s " to temporary; "
-       "rename workspace " ws2s " to " ws1s "; "
-       "rename workspace temporary to " ws2s "'"])))
+    (string
+      "i3-msg '"
+      "rename workspace " ws1s " to temporary; "
+      "rename workspace " ws2s " to " ws1s "; "
+      "rename workspace temporary to " ws2s "'")))
 
 (defn swap-workspace [ws1 ws2]
   (when (not (or (= ws1 ws2)
@@ -28,12 +24,12 @@
       (exec cmd))))
 
 (defn current-workspace []
-  (let [cmd (string/join
-              ["i3-msg -t get_workspaces | "
-               "jq -r '.[] | "
-               "select(.focused==true).name'"])
+  (let [cmd (string
+              "i3-msg -t get_workspaces | "
+              "jq -r '.[] | "
+              "select(.focused==true).name'")
         res (exec cmd)
-        ws (scan-number (string/trim res))]
+        ws (->number res)]
     ws))
 
 (defn main []
