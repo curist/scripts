@@ -1,5 +1,6 @@
 #!/bin/sh
 
 PICTURES_DIR="$(xdg-user-dir PICTURES)"
-
-maim $* --format=png /dev/stdout > "$PICTURES_DIR/`date '+%Y-%m-%d_%H%M%S'`.png"
+FILENAME="$PICTURES_DIR/`date '+%Y-%m-%d_%H%M%S'`.png"
+maim $* --format=png /dev/stdout > $FILENAME
+notify-send "Screenshot saved" $FILENAME

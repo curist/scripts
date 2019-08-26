@@ -1,0 +1,23 @@
+#!/usr/local/Gambit/bin/gsi
+;; vi: ft=scheme
+
+;; if there are multi display, swith between display
+;; else, switch between workspaces
+
+(define (get-display-count)
+  (let* [(res (shell-command "xrandr | grep ' connected ' | wc -l" #t))
+         (code (car res))
+         (displays (if (= code 0) (cdr res) "1"))]
+    (string->number (substring displays 0 1))))
+
+(define (switch-view target)
+  (if (eq? target 'display)
+      (shell-command "i3-msg 'focus output up'")
+      (shell-command "i3-msg 'workspace back_and_forth'")))
+
+(define (main)
+  (let* [(displays (get-display-count))
+         (target (if (< displays 2) 'workspace 'display))]
+    (switch-view target)))
+
+
