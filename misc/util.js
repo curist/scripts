@@ -1,8 +1,8 @@
-import { popen } from 'std'
+const { popen } = std
 
-export function shell(cmd) {
+export function exec(cmd) {
   const fd = popen(cmd, 'r')
   const result = fd.readAsString()
   fd.close()
-  return result
+  return result.trim()
 }

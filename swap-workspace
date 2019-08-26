@@ -1,42 +1,50 @@
-#!/usr/bin/env janet
+#!/usr/bin/env -S qjs --std
+// vi: ft=javascript
 
-(import ./misc/misc :prefix "")
+function exec(cmd) {
+  const fd = std.popen(cmd, 'r')
+  const result = fd.readAsString()
+  fd.close()
+  return result.trim()
+}
 
-(def args (array/slice (dyn :args) 1))
+const args = scriptArgs.slice(1)
 
-(def MIN-WS 1)
-(def MAX-WS 9)
+const [ MIN_WS, MAX_WS ] = [ 1, 9 ]
 
-(defn mv-ws-cmd [ws1 ws2]
-  (let [ws1s (string ws1)
-        ws2s (string ws2)]
-    (string
-      "i3-msg '"
-      "rename workspace " ws1s " to temporary; "
-      "rename workspace " ws2s " to " ws1s "; "
-      "rename workspace temporary to " ws2s "'")))
+const moveWorkspaceCmd = (ws1, ws2) => {
+  return `i3-msg '
+    rename workspace ${ ws1 } to temporary;
+    rename workspace ${ ws2 } to ${ ws1 };
+    rename workspace temporary to ${ ws2 }'
+  `
+}
 
-(defn swap-workspace [ws1 ws2]
-  (when (not (or (= ws1 ws2)
-                 (> ws1 MAX-WS) (> ws2 MAX-WS)
-                 (< ws1 MIN-WS) (< ws2 MIN-WS)))
-    (let [cmd (mv-ws-cmd ws1 ws2)]
-      (exec cmd))))
+const swapWorkspace = (ws1, ws2) => {
+  if(ws1 == ws2
+    || ws1 > MAX_WS  || ws2 > MAX_WS
+    || ws1 < MIN_WS  || ws2 < MIN_WS
+  ) {
+    return
+  }
+  const cmd = moveWorkspaceCmd(ws1, ws2)
+  exec(cmd)
+}
 
-(defn current-workspace []
-  (let [cmd (string
-              "i3-msg -t get_workspaces | "
-              "jq -r '.[] | "
-              "select(.focused==true).name'")
-        res (exec cmd)
-        ws (->number res)]
-    ws))
+const getCurrentWorkspace = () => {
+  const cmd = `i3-msg -t get_workspaces |
+    jq -r '.[] |
+    select(.focused==true).name'
+  `
+  return parseInt(exec(cmd), 10)
+}
 
-(defn main []
-  (let [dir (or (first args) "left")
-        ws1 (current-workspace)
-        ws2 ((if (= "left" dir) - +) ws1 1)]
-    (swap-workspace ws1 ws2)))
+function main() {
+  const direction = args[0] || 'left'
+  const ws1 = getCurrentWorkspace()
+  const ws2 = (direction == 'left') ? (ws1 - 1) : (ws1 + 1)
+  swapWorkspace(ws1, ws2)
+}
 
-(main)
+main()
 
