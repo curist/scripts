@@ -1,12 +1,7 @@
-#!/usr/bin/env -S qjs --std
+#!/usr/bin/env -S qjs -m --std
 // vi: ft=javascript
 
-function exec(cmd) {
-  const fd = std.popen(cmd, 'r')
-  const result = fd.readAsString()
-  fd.close()
-  return result.trim()
-}
+import { exec } from './misc/util.js'
 
 const args = scriptArgs.slice(1)
 
