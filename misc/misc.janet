@@ -1,8 +1,6 @@
 (defn exec [cmd]
-  (let [f (file/popen cmd)
-        result (file/read f :all)]
-    (file/close f)
-    result))
+  (with [f (file/popen cmd)]
+    (:read f :all)))
 
 (defn ->number [s]
   (scan-number (string/trim s)))
