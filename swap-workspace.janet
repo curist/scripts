@@ -2,19 +2,17 @@
 
 (import ./misc/misc :prefix "")
 
-(def args (array/slice (dyn :args) 1))
+(def args (drop 1 (dyn :args)))
 
 (def MIN-WS 1)
 (def MAX-WS 9)
 
 (defn mv-ws-cmd [ws1 ws2]
-  (let [ws1s (string ws1)
-        ws2s (string ws2)]
-    (string
-      "i3-msg '"
-      "rename workspace " ws1s " to temporary; "
-      "rename workspace " ws2s " to " ws1s "; "
-      "rename workspace temporary to " ws2s "'")))
+  (string
+    "i3-msg '"
+    "rename workspace " ws1 " to temporary; "
+    "rename workspace " ws2 " to " ws1 "; "
+    "rename workspace temporary to " ws2 "'"))
 
 (defn swap-workspace [ws1 ws2]
   (when (not (or (= ws1 ws2)
@@ -33,7 +31,7 @@
 (defn main []
   (let [dir (or (first args) "left")
         ws1 (current-workspace)
-        ws2 ((if (= "left" dir) - +) ws1 1)]
+        ws2 ((if (= "left" dir) dec inc) ws1)]
     (swap-workspace ws1 ws2)))
 
 (main)
