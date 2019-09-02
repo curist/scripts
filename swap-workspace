@@ -1,4 +1,4 @@
-#!/usr/bin/env -S qjs -m --std
+#!/usr/bin/env -S qjs -m
 // vi: ft=javascript
 
 import { exec } from './misc/util.js'

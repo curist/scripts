@@ -1,4 +1,4 @@
-const { popen } = std
+import { popen } from 'std'
 
 export function exec(cmd) {
   const fd = popen(cmd, 'r')
