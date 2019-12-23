@@ -2,8 +2,6 @@
 
 (import ./misc/misc :prefix "")
 
-(def args (drop 1 (dyn :args)))
-
 (def [MIN-WS MAX-WS] [1 9])
 
 (defn mv-ws-cmd [ws1 ws2]
@@ -28,11 +26,9 @@
              "select(.focused==true).name'"))
   (-> cmd exec ->number))
 
-(defn main []
-  (def dir (or (first args) "left"))
+(defn main [_ &opt dir]
+  (default dir "left")
   (def ws1 (current-workspace))
   (def ws2 ((if (= "left" dir) dec inc) ws1))
   (swap-workspace ws1 ws2))
-
-(main)
 
