@@ -1,7 +1,8 @@
 #!/usr/bin/env bb
 
-(use 'clojure.string)
-(require '[babashka.process :refer [process check]])
+(ns swap-workspace
+  (:require [clojure.string :refer [trim]]
+            [babashka.process :refer [process]]))
 
 (def MIN_WS 1)
 (def MAX_WS 9)
