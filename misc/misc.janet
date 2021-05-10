@@ -10,8 +10,8 @@
   [n lower upper]
   (-> n (max lower) (min upper)))
 
-(defmacro time [form & args]
-  (def times (if (empty? args) 1 (args 0)))
+(defmacro time [form &opt times]
+  (default times 1)
   ~(do
      (def start (os/clock))
      (loop [_ :range (0 ,times)] ,form)

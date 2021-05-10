@@ -1,6 +1,6 @@
 #!/usr/bin/env janet
 
-(import ./misc/misc :prefix "")
+(use ./misc/misc)
 
 (def [MIN-WS MAX-WS] [1 9])
 

@@ -27,9 +27,9 @@ const swapWorkspace = (ws1, ws2) => {
 }
 
 const getCurrentWorkspace = () => {
-  const cmd = `i3-msg -t get_workspaces |
-    jq -r '.[] |
-    select(.focused==true).name'
+  const cmd = `
+    i3-msg -t get_workspaces |
+      jq -r '.[] | select(.focused==true).name'
   `
   return parseInt(exec(cmd), 10)
 }

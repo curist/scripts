@@ -1,0 +1,51 @@
+#!/usr/bin/env -S qjs -m
+// vi: ft=javascript
+
+import { exec } from './misc/util.js'
+
+const args = scriptArgs.slice(1)
+
+function getWorkspaces() {
+  try {
+    const result = exec('i3-msg -t get_workspaces')
+    return JSON.parse(result)
+  } catch {
+    return []
+  }
+}
+
+function groupWorkspacesByOutput(workspaces) {
+  return workspaces.reduce((acc, w) => {
+    const output = w.output
+    acc[output] = acc[output] || []
+    acc[output].push(w)
+    if(w.focused) {
+      acc.__active_output_name__ = output
+    }
+    return acc
+  }, {})
+}
+
+function switchToWorkspace(name) {
+  exec(`i3-msg workspace ${name}`)
+}
+
+function main() {
+  const direction = args[0] || 'left'
+  const dirDelta = direction == 'left' ? -1 : 1
+  const workspaces = getWorkspaces()
+  const groupedWorkspaces = groupWorkspacesByOutput(workspaces)
+  const { __active_output_name__ } = groupedWorkspaces
+  const activeWorkspaces = groupedWorkspaces[__active_output_name__]
+  const len = activeWorkspaces.length
+  if (len < 2) {
+    return
+  }
+  const focusedIndex = activeWorkspaces.findIndex(w => w.focused)
+  const nextIndex = (focusedIndex + dirDelta + len) % len
+  const nextWorkspaceName = activeWorkspaces[nextIndex].name
+  switchToWorkspace(nextWorkspaceName)
+}
+
+main()
+

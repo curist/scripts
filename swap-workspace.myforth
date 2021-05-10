@@ -1,0 +1,29 @@
+: MIN-WS 1 ;
+: MAX-WS 9 ;
+: mv-ws-cmd ( $ws1 $ws2 -- cmd-str )
+  s` ( template string; squash spaces )
+    i3-msg '
+    rename workspace $ws1 to temporary ;
+    rename workspace $ws2 to $ws1 ;
+    rename workspace temporary to $ws2 '
+  ` ;
+
+: swap-workspace ( $ws1 $ws2 -- )
+  ( we would like to have macro to be able to short circuit this )
+  [
+    [ $ws1 $MAX-WS > ] [ $ws2 $MAX-WS > ]
+    [ $ws1 $MIN-ws < ] [ $ws2 $MIN-WS < ]
+  ] or break ( how to do conditional correctly? )
+  mv-ws-cmd | ;
+  ( do we want to differenciate pipe and drop result execution? )
+
+: get-current-workspace ( -- ws )
+  "i3-msg -t get_workspaces" |
+  "jq -r '.[] | select(.focused==true).name'" |
+  ->num ;
+
+: main ( [args] -- )
+  : dir [ [ args first ] "left" ] or ;
+  get-current-workspace dup
+  [ [ $dir "left" = ] [ dec ] [ inc ] ] if
+  swap-workspace ;
