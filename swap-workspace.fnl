@@ -20,8 +20,9 @@
 (let [direction (or (. arg 1) :left)
       ws1 (get-current-workspace)
       ws2 (if (= direction :left) (- ws1 1) (+ ws1 1))]
-  (when (not (or (= ws1 ws2)
-                 (> ws1 MAX_WS) (> ws2 MAX_WS)
-                 (< ws1 MIN_WS) (< ws2 MIN_WS)))
-    (move-workspace ws1 ws2)))
+  (when (or (= ws1 ws2)
+            (> ws1 MAX_WS) (> ws2 MAX_WS)
+            (< ws1 MIN_WS) (< ws2 MIN_WS))
+    (lua :return))
+  (move-workspace ws1 ws2))
 

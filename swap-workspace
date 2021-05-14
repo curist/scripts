@@ -11,8 +11,8 @@ const moveWorkspaceCmd = (ws1, ws2) => {
   return `i3-msg '
     rename workspace ${ ws1 } to temporary;
     rename workspace ${ ws2 } to ${ ws1 };
-    rename workspace temporary to ${ ws2 }'
-  `
+    rename workspace temporary to ${ ws2 }
+  '`
 }
 
 const swapWorkspace = (ws1, ws2) => {
