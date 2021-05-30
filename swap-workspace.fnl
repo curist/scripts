@@ -1,5 +1,8 @@
 #!/usr/bin/env fennel
 
+(macros {:def (fn [name value] `(local ,name ,value))
+         :defn (fn [name ...] `(fn ,name ,...))})
+
 (def sh (require :sh))
 (def i3msg (sh.command :i3-msg))
 (def jq (sh.command :jq))
